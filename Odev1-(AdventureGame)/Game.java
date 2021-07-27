@@ -8,14 +8,14 @@ public class Game {
 	public void login() {
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Macera Oyununa Hoþgeldiniz !");
-		System.out.println("Oyuna baþlamadan önce isminizi giriniz : a");
-		String playerName = scan.nextLine();
-		player = new Player("a");
+		System.out.println("Oyuna baþlamadan önce isminizi giriniz : ");
+		//String playerName = scan.nextLine();
+		player = new Player(""); //new Player(playerName);
 		player.selectCha();
-		start();
+		start(scan);
 	}
 
-	public void start() {
+	public void start(Scanner scan) {
 		while (true) {
 			System.out.println();
 			System.out.println("=================================================");
@@ -25,10 +25,11 @@ public class Game {
 			System.out.println("2. Maðara --> Karþýnýza belki zombi çýkabilir !");
 			System.out.println("3. Orman --> Karþýnýza belki vampir çýkabilir !");
 			System.out.println("4. Nehir --> Karþýnýza belki ayý çýkabilir !");
-			System.out.println("5. Maðaza --> Silah veya Zýrh alabilirsiniz!");
+			System.out.println("5. Maden --> Karþýnýza belki yýlan çýkabilir !");
+			System.out.println("6. Maðaza --> Silah veya Zýrh alabilirsiniz!");
 			System.out.print("Gitmek istediðiniz yer : ");
 			int selLoc = scan.nextInt();
-			while (selLoc < 0 || selLoc > 5) {
+			while (selLoc < 0 || selLoc > 6) {
 				System.out.print("Lütfen geçerli bir yer seçiniz : ");
 				selLoc = scan.nextInt();
 			}
@@ -38,15 +39,30 @@ public class Game {
 				location = new SafeHouse(player);
 				break;
 			case 2:
+				if(player.getInv().isFood()) {
+					System.out.println("Bu bölgeyi zaten temizlediniz. Tekrar giremezsiniz!");
+					continue;
+				}
 				location = new Cave(player);
 				break;
 			case 3:
+				if(player.getInv().isFirewood()) {
+					System.out.println("Bu bölgeyi zaten temizlediniz. Tekrar giremezsiniz!");
+					continue;
+				}
 				location = new Forest(player);
 				break;
 			case 4:
+				if(player.getInv().isWater()) {
+					System.out.println("Bu bölgeyi zaten temizlediniz. Tekrar giremezsiniz!");
+					continue;
+				}
 				location = new River(player);
 				break;
 			case 5:
+				location = new Mine(player);
+				break;
+			case 6:
 				location = new ToolStore(player);
 				break;
 			default:
@@ -56,11 +72,13 @@ public class Game {
 			if (location.getClass().getName().equals("SafeHouse")) {
 				if (player.getInv().isFirewood() && player.getInv().isFood() && player.getInv().isWater()) {
 					System.out.println("Tebrikler Oyunu Kazandýnýz !");
+					if(scan != null) scan.close();
 					break;
 				}
 			}
 			if (!location.getLocation()) {
 				System.out.println("Oyun Bitti !");
+				if(scan != null) scan.close();
 				break;
 			}
 

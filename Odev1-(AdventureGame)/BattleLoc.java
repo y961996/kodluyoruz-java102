@@ -1,3 +1,4 @@
+import java.util.Random;
 
 public abstract class BattleLoc extends Location {
 	protected Obstacle obstacle;
@@ -52,14 +53,28 @@ public abstract class BattleLoc extends Location {
 				String selCase = scan.nextLine();
 				selCase = selCase.toUpperCase();
 				if (selCase.equals("V")) {
-					System.out.println("Siz vurdunuz !");
-					obstacle.setHealth(obstacle.getHealth() - player.getTotalDamage());
-					afterHit();
-					if (obstacle.getHealth() > 0) {
-						System.out.println();
+					Random random = new Random();
+					int randomSýra = random.nextInt(10) + 1;
+					if(randomSýra > 5) {
+						System.out.println("Siz vurdunuz !");
+						obstacle.setHealth(obstacle.getHealth() - player.getTotalDamage());
+						afterHit();
+						if (obstacle.getHealth() > 0) {
+							System.out.println();
+							System.out.println("Canavar size vurdu !");
+							player.setHealthy(player.getHealthy() - (obstacle.getDamage() - player.getInv().getArmor()));
+							afterHit();
+						}						
+					} else {
 						System.out.println("Canavar size vurdu !");
 						player.setHealthy(player.getHealthy() - (obstacle.getDamage() - player.getInv().getArmor()));
 						afterHit();
+						if(player.getHealthy() > 0) {
+							System.out.println();
+							System.out.println("Siz vurdunuz !");
+							obstacle.setHealth(obstacle.getHealth() - player.getTotalDamage());
+							afterHit();
+						}
 					}
 				} else {
 					return false;
@@ -68,7 +83,10 @@ public abstract class BattleLoc extends Location {
 
 			if (obstacle.getHealth() < player.getHealthy()) {
 				System.out.println("Düþmaný yendiniz !");
-				player.setMoney(player.getMoney() + obstacle.getAward());
+				if(!obstacle.getName().equals("Yýlan"))
+					player.setMoney(player.getMoney() + obstacle.getAward());
+				else
+					player.setMoney(0);
 				System.out.println("Güncel Paranýz : " + player.getMoney());
 				obstacle.setHealth(defObsHealth);
 			} else {
