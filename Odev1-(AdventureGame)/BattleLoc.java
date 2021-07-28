@@ -3,6 +3,8 @@ import java.util.Random;
 public abstract class BattleLoc extends Location {
 	protected Obstacle obstacle;
 	protected String award;
+	
+	private static Random random = new Random();
 
 	BattleLoc(Player player, String name, Obstacle obstacle, String award) {
 		super(player);
@@ -53,7 +55,6 @@ public abstract class BattleLoc extends Location {
 				String selCase = scan.nextLine();
 				selCase = selCase.toUpperCase();
 				if (selCase.equals("V")) {
-					Random random = new Random();
 					int randomSýra = random.nextInt(10) + 1;
 					if(randomSýra > 5) {
 						System.out.println("Siz vurdunuz !");
@@ -85,8 +86,75 @@ public abstract class BattleLoc extends Location {
 				System.out.println("Düþmaný yendiniz !");
 				if(!obstacle.getName().equals("Yýlan"))
 					player.setMoney(player.getMoney() + obstacle.getAward());
-				else
-					player.setMoney(0);
+				else {
+					// Random silah, zýrh veya para
+					// Silah	  15%  => Tüfek -> 20%, Kýlýç -> 30%, Tabanca -> 50%
+					// Zýrh 	  15%  => Aðýr -> 20%, Orta -> 30%, Hafif -> 50%
+					// Para  	  25%  => 10 Para -> 20%, 5 Para -> 30%, 1 Para 50%
+					// Hiç birþey 45%
+					int randomNum = random.nextInt(100) + 1;
+					if(randomNum <= 15) {
+						// Silah
+						int randomSilah = random.nextInt(100) + 1;
+						if(randomSilah <= 20) {
+							// Tüfek
+							System.out.println("Tebrikler Tüfek kazandýnýz.");
+							player.getInv().setDamage(7);
+							player.getInv().setwName("Tüfek");
+						}else if(randomSilah <= 50) {
+							// Kýlýç
+							System.out.println("Tebrikler Kýlýç kazandýnýz.");
+							player.getInv().setDamage(3);
+							player.getInv().setwName("Kýlýç");
+						}else {
+							// Tabanca
+							System.out.println("Tebrikler Tabanca kazandýnýz.");
+							player.getInv().setDamage(2);
+							player.getInv().setwName("Tabanca");
+						}
+						
+					}else if(randomNum <= 30) {
+						// Zýrh
+						int randomZýrh = random.nextInt(100) + 1;
+						if(randomZýrh <= 20) {
+							// Aðýr
+							System.out.println("Tebrikler Aðýr Zýrh kazandýnýz.");
+							player.getInv().setArmor(5);
+							player.getInv().setaName("Aðýr Zýrh");
+						}else if(randomZýrh <= 50) {
+							// Orta
+							System.out.println("Tebrikler Orta Zýrh kazandýnýz.");
+							player.getInv().setArmor(3);
+							player.getInv().setaName("Orta Zýrh");
+						}else {
+							// Hafif
+							System.out.println("Tebrikler Hafif Zýrh kazandýnýz.");
+							player.getInv().setArmor(1);
+							player.getInv().setaName("Hafif Zýrh");
+						}
+					
+					}else if(randomNum <= 55) {
+						// Para
+						int randomPara = random.nextInt(100) + 1;
+						if(randomPara <= 20) {
+							// 10 Para
+							System.out.println("Tebrikler 10 Para kazandýnýz.");
+							player.setMoney(player.getMoney() + 10);
+						}else if(randomPara <= 50) {
+							// 5 Para
+							System.out.println("Tebrikler 5 Para kazandýnýz.");
+							player.setMoney(player.getMoney() + 5);
+						}else {
+							// 1 Para
+							System.out.println("Tebrikler 1 Para kazandýnýz.");
+							player.setMoney(player.getMoney() + 1);
+						}
+					
+					}else {
+						// Hiçbirþey
+						System.out.println("Maalesef hiçbir ödül kazanamadýnýz!");
+					}
+				}
 				System.out.println("Güncel Paranýz : " + player.getMoney());
 				obstacle.setHealth(defObsHealth);
 			} else {
@@ -114,7 +182,10 @@ public abstract class BattleLoc extends Location {
 		System.out.println("\n" + obstacle.getName() + " Deðerleri\n--------------");
 		System.out.println("Can:" + obstacle.getHealth());
 		System.out.println("Hasar:" + obstacle.getDamage());
-		System.out.println("Ödül:" + obstacle.getAward());
+		if(!obstacle.getName().equals("Yýlan"))
+			System.out.println("Ödül:" + obstacle.getAward());
+		else
+			System.out.println("Ödül: Para, Silah veya Zýrh");
 	}
 
 	public void afterHit() {
